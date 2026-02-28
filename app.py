@@ -4,7 +4,7 @@ import pickle
 import os
 from sklearn.linear_model import LinearRegression
 
-# Check if model exists
+# If model not found → train
 if not os.path.exists("model.pkl"):
     dataset = pd.read_csv("data/Investment.csv")
     X = dataset.iloc[:, :-1]
