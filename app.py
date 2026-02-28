@@ -1,26 +1,19 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import os
+from sklearn.linear_model import LinearRegression
 
-model = pickle.load(open("model.pkl", "rb"))
+# Check if model exists
+if not os.path.exists("model.pkl"):
+    dataset = pd.read_csv("data/Investment.csv")
+    X = dataset.iloc[:, :-1]
+    y = dataset.iloc[:, -1]
+    X = pd.get_dummies(X, drop_first=True)
 
-st.title("📊 Investment Profit Prediction App")
+    model = LinearRegression()
+    model.fit(X, y)
 
-digital = st.number_input("Digital Marketing Spend")
-promotion = st.number_input("Promotion Spend")
-research = st.number_input("Research Spend")
-state = st.selectbox("State", ["New York", "California", "Florida"])
-
-input_data = pd.DataFrame({
-    "DigitalMarketing": [digital],
-    "Promotion": [promotion],
-    "Research": [research],
-    "State": [state]
-})
-
-input_data = pd.get_dummies(input_data, drop_first=True)
-
-prediction = model.predict(input_data)
-
-if st.button("Predict Profit"):
-    st.success(f"Estimated Profit: {prediction[0]:.2f}")
+    pickle.dump(model, open("model.pkl", "wb"))
+else:
+    model = pickle.load(open("model.pkl", "rb"))
